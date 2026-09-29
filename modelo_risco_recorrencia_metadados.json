@@ -1,0 +1,33 @@
+{
+  "modelo": "Gradient Boosting",
+  "data_treino": "2026-09-29",
+  "base": "SINAN/VIOL 2024 — DATASUS",
+  "populacao": "vítimas 60+, violência interpessoal",
+  "alvo": "OUT_VEZES",
+  "n_treino": 20041,
+  "n_teste": 5011,
+  "n_variaveis": 58,
+  "n_features_apos_encoding": 194,
+  "taxa_recorrencia": 0.5326,
+  "metricas": {
+    "modelo": "Gradient Boosting",
+    "AUC": 0.846,
+    "AUC (CV)": 0.843,
+    "desvio CV": 0.004,
+    "acurácia": 0.765,
+    "recall": 0.804,
+    "precisão": 0.767
+  },
+  "variaveis_excluidas": [
+    "Violência de repetição",
+    "Idade",
+    "UF de notificação",
+    "UF de residência",
+    "UF de ocorrência",
+    "Raça/cor",
+    "Autor — a própria pessoa",
+    "Lesão autoprovocada"
+  ],
+  "versao_sklearn": "1.6.1",
+  "aviso_uso": "Ferramenta de apoio à triagem humana. Não substitui avaliação profissional e não deve excluir nenhum caso do atendimento."
+}
