@@ -1,10 +1,5 @@
 """
-app.py — MVP de triagem de risco de recorrência
-
-Recebe os dados de uma notificação, estima a probabilidade de a violência
-ser de repetição e mostra quais características puxaram a pontuação.
-
-Rodar local:   streamlit run app.py
+Rodar local: streamlit run app.py
 """
 
 import json
@@ -25,10 +20,6 @@ st.set_page_config(
 )
 
 
-# =============================================================================
-# Carga do modelo
-# =============================================================================
-
 @st.cache_resource
 def load_model():
     """Carrega o pipeline uma vez e mantém em cache entre execuções."""
@@ -47,19 +38,13 @@ def load_model():
 pipeline, metadata = load_model()
 
 if pipeline is None:
-    st.error(
-        f"Modelo não encontrado. Coloque `{MODEL_FILE}` na mesma pasta do app."
-    )
+    st.error(f"Modelo não encontrado. Coloque `{MODEL_FILE}` na mesma pasta do app.")
     st.stop()
 
 
-# =============================================================================
 # Explicação por caso
-# =============================================================================
 
 REFERENCE = {
-    # Valor de referência de cada campo: "Não" ou "Ignorado", conforme a ficha.
-    # A explicação compara o caso real contra este cenário neutro.
     "default_yes_no": "2",
     "default_categorical": "9",
 }
@@ -102,9 +87,7 @@ def explain(pipeline, row, fields, top=5):
     return base_prob, contributions[:top]
 
 
-# =============================================================================
 # Formulário
-# =============================================================================
 
 YES_NO = {"Não": "2", "Sim": "1", "Ignorado": "9"}
 
@@ -157,15 +140,24 @@ DISABILITY_LABELS = {
 }
 
 LOCATIONS = {
-    "Residência": "01", "Habitação coletiva": "02", "Escola": "03",
-    "Local de prática esportiva": "04", "Bar ou similar": "05",
-    "Via pública": "06", "Comércio/serviços": "07",
-    "Indústrias/construção": "08", "Outro": "09", "Ignorado": "99",
+    "Residência": "01",
+    "Habitação coletiva": "02",
+    "Escola": "03",
+    "Local de prática esportiva": "04",
+    "Bar ou similar": "05",
+    "Via pública": "06",
+    "Comércio/serviços": "07",
+    "Indústrias/construção": "08",
+    "Outro": "09",
+    "Ignorado": "99",
 }
 
 MARITAL = {
-    "Solteiro": "1", "Casado/união consensual": "2", "Viúvo": "3",
-    "Separado": "4", "Ignorado": "9",
+    "Solteiro": "1",
+    "Casado/união consensual": "2",
+    "Viúvo": "3",
+    "Separado": "4",
+    "Ignorado": "9",
 }
 
 EDUCATION = {
@@ -182,16 +174,19 @@ EDUCATION = {
 }
 
 MOTIVATION = {
-    "Não se aplica": "88", "Conflito geracional": "06",
-    "Deficiência": "08", "Sexismo": "01", "Racismo": "03",
-    "Situação de rua": "07", "Outros": "09", "Ignorado": "99",
+    "Não se aplica": "88",
+    "Conflito geracional": "06",
+    "Deficiência": "08",
+    "Sexismo": "01",
+    "Racismo": "03",
+    "Situação de rua": "07",
+    "Outros": "09",
+    "Ignorado": "99",
 }
 
 
 st.title("Triagem de risco de recorrência")
-st.caption(
-    "Violência contra a pessoa idosa — apoio à priorização de casos notificados"
-)
+st.caption("Violência contra a pessoa idosa — apoio à priorização de casos notificados")
 
 st.warning(
     "**Apoio à decisão humana.** A pontuação sugere uma ordem de "
@@ -247,7 +242,8 @@ with st.form("caso"):
 
     st.subheader("Deficiência ou transtorno")
     disabilities = st.multiselect(
-        "Condições", list(DISABILITY_LABELS.values()),
+        "Condições",
+        list(DISABILITY_LABELS.values()),
         label_visibility="collapsed",
     )
 
@@ -256,9 +252,7 @@ with st.form("caso"):
     submitted = st.form_submit_button("Calcular risco", type="primary")
 
 
-# =============================================================================
 # Predição
-# =============================================================================
 
 if submitted:
     case = {
@@ -269,7 +263,10 @@ if submitted:
         "LOCAL_OCOR": LOCATIONS[location],
         "VIOL_MOTIV": MOTIVATION[motivation],
         "AUTOR_SEXO": {
-            "Masculino": "1", "Feminino": "2", "Ambos": "3", "Ignorado": "9",
+            "Masculino": "1",
+            "Feminino": "2",
+            "Ambos": "3",
+            "Ignorado": "9",
         }[author_sex],
         "AUTOR_ALCO": YES_NO[alcohol],
         "NUM_ENVOLV": {"Um": "1", "Dois ou mais": "2", "Ignorado": "9"}[involved],
@@ -291,8 +288,10 @@ if submitted:
     row = align_to_model(row, pipeline)
 
     all_labels = {
-        **VIOLENCE_LABELS, **MEANS_LABELS,
-        **AUTHOR_LABELS, **DISABILITY_LABELS,
+        **VIOLENCE_LABELS,
+        **MEANS_LABELS,
+        **AUTHOR_LABELS,
+        **DISABILITY_LABELS,
         "AUTOR_ALCO": "Suspeita de uso de álcool",
     }
     probability, factors = explain(pipeline, row, all_labels)
@@ -310,9 +309,7 @@ if submitted:
         else:
             st.info("Prioridade padrão", icon="🔵")
 
-        st.caption(
-            "A prioridade reordena a fila. Nenhum caso deixa de ser atendido."
-        )
+        st.caption("A prioridade reordena a fila. Nenhum caso deixa de ser atendido.")
 
     with right:
         st.subheader("O que pesou neste caso")
@@ -330,9 +327,7 @@ if submitted:
                 "relevante neste caso."
             )
 
-        st.caption(
-            "Discorda? A avaliação profissional prevalece sobre a sugestão."
-        )
+        st.caption("Discorda? A avaliação profissional prevalece sobre a sugestão.")
 
 
 # =============================================================================
